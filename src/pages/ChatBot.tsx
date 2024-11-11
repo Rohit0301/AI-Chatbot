@@ -1,7 +1,12 @@
+import { ChatbotProvider } from "../context/chatbot";
 import ChatBotContainer from "../features/chatbot";
 
 const ChatBot = (): JSX.Element => {
-  return <ChatBotContainer />;
+  return (
+    <ChatbotProvider>
+      <ChatBotContainer />;
+    </ChatbotProvider>
+  );
 };
 
 export default ChatBot;
