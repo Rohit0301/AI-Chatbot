@@ -67,8 +67,8 @@ export const ChatbotProvider: FC<{ children: ReactNode }> = ({
   );
 };
 
-export const useChatbotContext = (): IChatbotContext | {} => {
-  const context: IChatbotContext | {} = useContext(ChatbotContext) || {};
+export const useChatbotContext = (): IChatbotContext | null => {
+  const context: IChatbotContext | null = useContext(ChatbotContext);
   if (context === undefined) {
     throw new Error("useChatbotContext must be used within a ChatbotProvider");
   }

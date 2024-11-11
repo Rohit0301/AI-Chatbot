@@ -10,8 +10,10 @@ import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 
+import { IMessage } from "../../../types";
+
 interface Props {
-  message: string;
+  message: IMessage;
 }
 
 const BotMessageCard: FC<Props> = memo(({ message }): JSX.Element => {
@@ -34,7 +36,7 @@ const BotMessageCard: FC<Props> = memo(({ message }): JSX.Element => {
           },
         }}
       >
-        {message}
+        {message.text}
         <Actions />
       </Paper>
     </Stack>
