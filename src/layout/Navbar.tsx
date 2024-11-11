@@ -15,7 +15,7 @@ const Navbar = (): JSX.Element => {
     >
       <Typography variant="h5">Chatbot</Typography>
       <Avatar sx={{ width: 32, height: 32 }} aria-label="user-profile-icon">
-        <Person />
+        <Person color="secondary" />
       </Avatar>
     </Stack>
   );

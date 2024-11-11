@@ -2,7 +2,7 @@ import Navbar from "./Navbar";
 import { screen, render } from "@testing-library/react";
 
 describe("Navbar", () => {
-  test("Render Navbar correctly", () => {
+  test("render navbar correctly", () => {
     render(<Navbar />);
     expect(
       screen.getByRole("heading", { name: "Chatbot" })
