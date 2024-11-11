@@ -7,20 +7,43 @@ import SendIcon from "@mui/icons-material/Send";
 import IconButton from "@mui/material/IconButton";
 
 import { useChatbotContext } from "../../../context/chatbot";
+import { generateAIResponse } from "../../../service/openai";
 
 const InputForm = (): JSX.Element => {
   const [userMessage, setUserMessage] = useState<string>("");
-  const { addNewUserMessage } = useChatbotContext() || {};
+  const { addNewUserMessage, addNewBotMessage } = useChatbotContext() || {};
 
-  const addNewMessage = () => {
+  const generateBotMessage = async (message: string): Promise<void> => {
+    try {
+      const botMessage: string = await generateAIResponse(message);
+      addNewBotMessage &&
+        addNewBotMessage({
+          id: uuidv4(),
+          text: botMessage,
+          isWritting: true,
+          isBotMessage: true,
+        });
+    } catch {
+      addNewBotMessage &&
+        addNewBotMessage({
+          id: uuidv4(),
+          isBotMessage: true,
+          text: "Something went wrong while generating response!",
+        });
+    }
+  };
+
+  const addNewMessage = async (): Promise<void> => {
     if (!userMessage.trim()) return;
     addNewUserMessage &&
       addNewUserMessage({
         id: uuidv4(),
         text: userMessage?.trim(),
       });
+    await generateBotMessage(userMessage);
     setUserMessage("");
   };
+
   return (
     <Box>
       <Stack

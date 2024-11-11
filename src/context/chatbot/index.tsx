@@ -15,6 +15,7 @@ const MESSAGES_STORAGE_KEY = "chatbot-messages";
 
 interface IChatbotContext {
   messages: IMessage[];
+  addNewBotMessage: (botMessage: IMessage) => void;
   addNewUserMessage: (userMessage: IMessage) => void;
 }
 
@@ -38,27 +39,32 @@ export const ChatbotProvider: FC<{ children: ReactNode }> = ({
   };
 
   /**
-   * Updates the state with a new messages and stores it in local storage.
-   * @param messages - The updated messages.
+   * Adds a new user message and stores the updated messages in local storage.
+   * @param userMessage - user message.
    */
-  const storeDataToState = (messages: IMessage[]): void => {
-    setMessages(messages);
-    setDataToStorage(MESSAGES_STORAGE_KEY, messages);
+  const addNewUserMessage = async (userMessage: IMessage): Promise<void> => {
+    setMessages((prev: IMessage[]) => {
+      setDataToStorage(MESSAGES_STORAGE_KEY, [...prev, userMessage]);
+      return [...prev, userMessage];
+    });
   };
 
   /**
-   * Adds a new user message and stores the updated messages in local storage.
-   * @param message - user message.
+   * Adds a new bot message and stores the updated messages in local storage.
+   * @param botMessage - user message.
    */
-  const addNewUserMessage = (userMessage: IMessage): void => {
-    const updatedMessages: IMessage[] = [...messages, userMessage];
-    storeDataToState(updatedMessages);
+  const addNewBotMessage = async (botMessage: IMessage): Promise<void> => {
+    setMessages((prev: IMessage[]) => {
+      setDataToStorage(MESSAGES_STORAGE_KEY, [...prev, botMessage]);
+      return [...prev, botMessage];
+    });
   };
 
   return (
     <ChatbotContext.Provider
       value={{
         messages,
+        addNewBotMessage,
         addNewUserMessage,
       }}
     >
