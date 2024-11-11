@@ -7,8 +7,8 @@ const ChatBotContainer = (): JSX.Element => {
   return (
     <Stack
       sx={{
+        px: 2,
         margin: "auto",
-        maxWidth: "600px",
         height: "calc(100% - 100px)",
         justifyContent: "space-between",
       }}
