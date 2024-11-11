@@ -4,9 +4,10 @@ import Paper from "@mui/material/Paper";
 import Avatar from "@mui/material/Avatar";
 import { Person } from "@mui/icons-material";
 import { useTheme } from "@mui/material";
+import { IMessage } from "../../../types";
 
 interface Props {
-  message: string;
+  message: IMessage;
 }
 
 const UserMessageCard: FC<Props> = memo(({ message }): JSX.Element => {
@@ -28,7 +29,7 @@ const UserMessageCard: FC<Props> = memo(({ message }): JSX.Element => {
           bgcolor: theme.palette.primary.main,
         }}
       >
-        {message}
+        {message.text}
       </Paper>
       <Avatar sx={{ width: 44, height: 44 }}>
         <Person color="secondary" aria-label="person-icon" />

@@ -1,6 +1,6 @@
 export interface IMessage {
     id: string;
-    message: string;
+    text: string;
     isWritting?: boolean;
     likeOrUnlike?: string;
     isBotMessage?: boolean;

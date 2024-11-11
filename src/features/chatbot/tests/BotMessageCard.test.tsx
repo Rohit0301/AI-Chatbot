@@ -2,18 +2,19 @@
 import userEvent from '@testing-library/user-event';
 import { render, screen } from '@testing-library/react';
 
+import { mockMessages } from '../../../constants/mock';
 import BotMessageCard from '../components/BotMessageCard';
 
 describe('BotMessageCard Component', () => {
-  const testMessage = "Hello, how can I help you ?";
+  const botMessage = mockMessages[1]
 
   test('renders the component with the correct message', () => {
-    render(<BotMessageCard message={testMessage} />);
-    expect(screen.getByText(testMessage)).toBeInTheDocument();
+    render(<BotMessageCard message={botMessage} />);
+    expect(screen.getByText(botMessage.text)).toBeInTheDocument();
   });
 
   test('hides actions by default', () => {
-    render(<BotMessageCard message={testMessage} />);
+    render(<BotMessageCard message={botMessage} />);
     const actionButtons = screen.queryByLabelText('bot-message-actions');
     expect(actionButtons).toHaveStyle({'display': 'none'})
   });
