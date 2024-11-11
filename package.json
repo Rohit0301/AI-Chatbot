@@ -52,6 +52,17 @@
   "jest": {
     "transformIgnorePatterns": [
       "node_modules/(?!axios)" 
+    ],
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/src/app/",
+      "<rootDir>/src/types/",
+      "<rootDir>/src/pages/",
+      "<rootDir>/src/context/",
+      "<rootDir>/src/index.tsx",
+      "<rootDir>/src/layout/index.tsx",
+      "<rootDir>/src/features/index.tsx",
+      "<rootDir>/src/features/chatbot/index.tsx",
+      "<rootDir>/src/reportWebVitals.ts"
     ]
   }
 }

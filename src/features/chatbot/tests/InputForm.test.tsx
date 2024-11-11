@@ -6,7 +6,7 @@ import { useChatbotContext } from "../../../context/chatbot";
 
 // Mocking the useChatbotContext hook
 jest.mock("../../../context/chatbot", () => ({
-  useChatbotContext: jest.fn(() => "Hello how can i help you ?"),
+  useChatbotContext: jest.fn(),
 }));
 
 describe("InputForm Component", () => {
@@ -44,6 +44,19 @@ describe("InputForm Component", () => {
 
   test("disables the send button when input is empty", () => {
     render(<InputForm />);
+    const sendButton = screen.getByRole("button");
+    expect(sendButton).toBeDisabled();
+  });
+
+  test("disables the send button when bot is typing", async () => {
+    const user = userEvent.setup();
+    (useChatbotContext as jest.Mock).mockReturnValue({
+      isBotTyping: true,
+    });
+    render(<InputForm />);
+    const inputElement = screen.getByPlaceholderText("Type Message Here...");
+
+    await user.type(inputElement, "Hello");
     const sendButton = screen.getByRole("button");
     expect(sendButton).toBeDisabled();
   });
