@@ -11,7 +11,8 @@ import { generateAIResponse } from "../../../service/openai";
 
 const InputForm = (): JSX.Element => {
   const [userMessage, setUserMessage] = useState<string>("");
-  const { addNewUserMessage, addNewBotMessage } = useChatbotContext() || {};
+  const { isBotTyping, addNewUserMessage, addNewBotMessage } =
+    useChatbotContext() || {};
 
   const generateBotMessage = async (message: string): Promise<void> => {
     try {
@@ -28,20 +29,22 @@ const InputForm = (): JSX.Element => {
         addNewBotMessage({
           id: uuidv4(),
           isBotMessage: true,
+          isWritting: true,
           text: "Something went wrong while generating response!",
         });
     }
   };
 
   const addNewMessage = async (): Promise<void> => {
-    if (!userMessage.trim()) return;
+    const message: string = userMessage?.trim();
+    if (!message) return;
     addNewUserMessage &&
       addNewUserMessage({
         id: uuidv4(),
-        text: userMessage?.trim(),
+        text: message,
       });
-    await generateBotMessage(userMessage);
     setUserMessage("");
+    await generateBotMessage(message);
   };
 
   return (
@@ -62,10 +65,9 @@ const InputForm = (): JSX.Element => {
             setUserMessage(event.target.value)
           }
         />
-        {/* TODO: this button disable when, bot is writing and no message written  */}
         <IconButton
           onClick={addNewMessage}
-          disabled={!userMessage}
+          disabled={!userMessage || isBotTyping}
           sx={{ transform: "rotate(-45deg)" }}
         >
           <SendIcon />

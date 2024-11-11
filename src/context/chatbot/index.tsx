@@ -15,6 +15,8 @@ const MESSAGES_STORAGE_KEY = "chatbot-messages";
 
 interface IChatbotContext {
   messages: IMessage[];
+  isBotTyping: boolean;
+  stopWritingBotMessage: () => void;
   addNewBotMessage: (botMessage: IMessage) => void;
   addNewUserMessage: (userMessage: IMessage) => void;
 }
@@ -60,12 +62,28 @@ export const ChatbotProvider: FC<{ children: ReactNode }> = ({
     });
   };
 
+  /**
+   * Stops the typing effect of bot last message.
+   */
+  const stopWritingBotMessage = (): void => {
+    let updatedMessage: IMessage[] = [...messages];
+    const lastIndex: number = updatedMessage.length - 1;
+    updatedMessage[lastIndex] = {
+      ...updatedMessage[lastIndex],
+      isWritting: false,
+    };
+    setMessages(updatedMessage);
+    setDataToStorage(MESSAGES_STORAGE_KEY, updatedMessage);
+  };
+
   return (
     <ChatbotContext.Provider
       value={{
         messages,
         addNewBotMessage,
         addNewUserMessage,
+        stopWritingBotMessage,
+        isBotTyping: Boolean(messages?.[messages?.length - 1]?.isWritting),
       }}
     >
       {children}

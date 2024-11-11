@@ -11,12 +11,15 @@ import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 
 import { IMessage } from "../../../types";
+import { useChatbotContext } from "../../../context/chatbot";
+import LiveTypingEffect from "../../../components/LiveTypingEffect";
 
 interface Props {
   message: IMessage;
 }
 
 const BotMessageCard: FC<Props> = memo(({ message }): JSX.Element => {
+  const { isBotTyping, stopWritingBotMessage } = useChatbotContext() || {};
   return (
     <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
       <Avatar sx={{ width: 44, height: 44 }}>
@@ -36,8 +39,17 @@ const BotMessageCard: FC<Props> = memo(({ message }): JSX.Element => {
           },
         }}
       >
-        {message.text}
-        <Actions />
+        {message.isWritting ? (
+          <LiveTypingEffect
+            message={message.text}
+            onComplete={() =>
+              stopWritingBotMessage && stopWritingBotMessage()
+            }
+          />
+        ) : (
+          message.text
+        )}
+        {!isBotTyping && <Actions />}
       </Paper>
     </Stack>
   );
@@ -61,7 +73,10 @@ const Actions = (): JSX.Element => {
         position: "absolute",
       }}
     >
-      <IconButton sx={{ p: 0, height: "max-content" }} aria-label="action-button">
+      <IconButton
+        sx={{ p: 0, height: "max-content" }}
+        aria-label="action-button"
+      >
         <ContentCopyIcon sx={{ fontSize: "22px" }} />
       </IconButton>
       <IconButton sx={{ p: 0, height: "max-content" }}>
