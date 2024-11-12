@@ -63,7 +63,7 @@ const BotMessageCard: FC<Props> = memo(({ message }): JSX.Element => {
 const Actions: FC<{
   message: IMessage;
 }> = ({ message }): JSX.Element => {
-  const { lastBotMessageId, addNewBotMessage, likeUnlikeBotMessage } =
+  const { addNewBotMessage, likeUnlikeBotMessage } =
     useChatbotContext() || {};
   return (
     <Stack
@@ -90,7 +90,7 @@ const Actions: FC<{
         <ContentCopyIcon sx={{ fontSize: "22px" }} />
       </IconButton>
       <IconButton
-      aria-label="like"
+        aria-label="like"
         sx={{ p: 0, height: "max-content" }}
         onClick={() => likeUnlikeBotMessage?.(message?.id, true)}
       >
@@ -106,7 +106,7 @@ const Actions: FC<{
         onClick={() => likeUnlikeBotMessage?.(message?.id, false)}
       >
         {message?.likeOrUnlike === "unlike" ? (
-          <ThumbDown  sx={{ fontSize: "22px" }} color="primary" />
+          <ThumbDown sx={{ fontSize: "22px" }} color="primary" />
         ) : (
           <ThumbDownOffAltIcon sx={{ fontSize: "22px" }} />
         )}
@@ -114,21 +114,20 @@ const Actions: FC<{
       <IconButton aria-label="comment" sx={{ p: 0, height: "max-content" }}>
         <ChatBubbleOutlineIcon sx={{ fontSize: "22px" }} />
       </IconButton>
-      {lastBotMessageId === message?.id && (
-        <IconButton
-          aria-label="regenerate-response"
-          sx={{ p: 0, height: "max-content" }}
-          onClick={async () =>
-            await generateBotMessage(
-              message?.userMessage || "",
-              addNewBotMessage,
-              message?.id
-            )
-          }
-        >
-          <RepeatIcon sx={{ fontSize: "22px" }} />
-        </IconButton>
-      )}
+
+      <IconButton
+        aria-label="regenerate-response"
+        sx={{ p: 0, height: "max-content" }}
+        onClick={async () =>
+          await generateBotMessage(
+            message?.userMessage || "",
+            addNewBotMessage,
+            message?.id
+          )
+        }
+      >
+        <RepeatIcon sx={{ fontSize: "22px" }} />
+      </IconButton>
     </Stack>
   );
 };

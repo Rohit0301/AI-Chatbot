@@ -30,7 +30,6 @@ describe("BotMessageCard Component", () => {
   beforeEach(() => {
     // Set up the mock implementation before each test
     (useChatbotContext as jest.Mock).mockReturnValue({
-      lastBotMessageId: botMessage?.id,
       addNewBotMessage: mockGenerateBotMessage,
       likeUnlikeBotMessage: mockLikeUnlikeBotMessage,
       stopWritingBotMessage: mockStopWritingBotMessage,

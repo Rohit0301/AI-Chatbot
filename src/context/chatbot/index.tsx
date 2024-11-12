@@ -16,7 +16,6 @@ const MESSAGES_STORAGE_KEY = "chatbot-messages";
 interface IChatbotContext {
   messages: IMessage[];
   isBotTyping: boolean;
-  lastBotMessageId: string | undefined;
   stopWritingBotMessage: () => void;
   addNewBotMessage: (botMessage: IMessage) => void;
   addNewUserMessage: (userMessage: IMessage) => void;
@@ -57,12 +56,13 @@ export const ChatbotProvider: FC<{ children: ReactNode }> = ({
    * Adds a new bot message and stores the updated messages in local storage.
    * @param botMessage - user message.
    */
-  const addNewBotMessage = async (botMessage: IMessage): Promise<void> => {
+  const addNewBotMessage = async (
+    botMessage: IMessage,
+    userMessage?: IMessage | null
+  ): Promise<void> => {
     setMessages((prev: IMessage[]) => {
-      // If the message is regenerated then we override the text.
-      if (prev[prev.length - 1]?.id === botMessage?.id) {
-        prev.pop();
-      }
+      // If the message is regenerated then add user message again with new response.
+      prev = [...prev, ...(userMessage ? [userMessage] : [])];
       setDataToStorage(MESSAGES_STORAGE_KEY, [...prev, botMessage]);
       return [...prev, botMessage];
     });
@@ -109,9 +109,6 @@ export const ChatbotProvider: FC<{ children: ReactNode }> = ({
         stopWritingBotMessage,
         likeUnlikeBotMessage,
         isBotTyping: Boolean(messages?.[messages?.length - 1]?.isWritting),
-        lastBotMessageId: messages
-          .filter((message: IMessage) => message.isBotMessage)
-          ?.pop()?.id,
       }}
     >
       {children}
