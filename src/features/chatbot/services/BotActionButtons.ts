@@ -11,25 +11,35 @@ export const copyBotMessage = async (message: string): Promise<void> => {
 
 export const generateBotMessage = async (
   message: string,
-  addNewBotMessage: undefined | ((message: IMessage) => void),
+  addNewBotMessage:
+    | undefined
+    | ((message: IMessage, userMessagePayload: IMessage | null) => void),
   messageId?: string
 ): Promise<void> => {
+  const botMessagePayload: IMessage = {
+    text: "",
+    isWritting: true,
+    isBotMessage: true,
+    userMessage: message,
+    id: messageId || uuidv4(),
+  };
+  const userMessagePayload: IMessage | null = messageId
+    ? { id: uuidv4(), text: message }
+    : null;
   try {
     const botMessage: string = await generateAIResponse(message);
-      addNewBotMessage?.({
-        id: messageId || uuidv4(),
-        text: botMessage,
-        isWritting: true,
 
-        isBotMessage: true,
-      });
+    addNewBotMessage?.(
+      { ...botMessagePayload, text: botMessage },
+      userMessagePayload
+    );
   } catch {
-      addNewBotMessage?.({
-        id: messageId || uuidv4(),
-        isBotMessage: true,
-        isWritting: true,
-        userMessage: message,
+    addNewBotMessage?.(
+      {
+        ...botMessagePayload,
         text: "Something went wrong while generating response!",
-      });
+      },
+      userMessagePayload
+    );
   }
 };
