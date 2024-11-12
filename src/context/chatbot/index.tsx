@@ -19,6 +19,7 @@ interface IChatbotContext {
   stopWritingBotMessage: () => void;
   addNewBotMessage: (botMessage: IMessage) => void;
   addNewUserMessage: (userMessage: IMessage) => void;
+  updateUserComment: (comment: string, messageId: string) => void;
   likeUnlikeBotMessage: (messageId: string, isLike: boolean) => void
 }
 
@@ -99,11 +100,30 @@ export const ChatbotProvider: FC<{ children: ReactNode }> = ({
     setMessages(updatedMessage);
     setDataToStorage(MESSAGES_STORAGE_KEY, updatedMessage);
   };
+  
+  /**
+   * Updated the bot message comment and store it in localstorage
+   * @param comment - user comment
+   * @param messageId - bot message id on which user comment
+   */
+  const updateUserComment = (comment: string, messageId: string): void => {
+    const updatedMessage: IMessage[] = messages.map((message: IMessage) =>
+      message?.id !== messageId
+        ? message
+        : {
+            ...message,
+            comment: comment
+          }
+    );
+    setMessages(updatedMessage);
+    setDataToStorage(MESSAGES_STORAGE_KEY, updatedMessage);
+  }
 
   return (
     <ChatbotContext.Provider
       value={{
         messages,
+        updateUserComment,
         addNewBotMessage,
         addNewUserMessage,
         stopWritingBotMessage,
