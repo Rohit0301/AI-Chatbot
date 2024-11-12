@@ -1,5 +1,5 @@
 import userEvent from "@testing-library/user-event";
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import InputForm from "../components/InputForm";
 import { useChatbotContext } from "../../../context/chatbot";
@@ -108,5 +108,48 @@ describe("InputForm Component", () => {
       id: expect.any(String),
       text: "Test Message",
     });
+  });
+
+  test("submits form on Enter key press", async () => {
+    const user = userEvent.setup();
+    render(<InputForm />);
+    const inputElement = screen.getByPlaceholderText("Type Message Here...");
+    await user.type(inputElement, "Hello {enter}");
+    expect(addNewUserMessageMock).toHaveBeenCalled();
+  });
+
+  test("inserts new line on Cmd+Enter (Mac) or Ctrl+Enter (Windows)", async () => {
+    const user = userEvent.setup();
+    render(<InputForm />);
+    const inputElement = screen.getByPlaceholderText("Type Message Here...");
+    
+    // Simulate Ctrl+Enter for mac (Ctrl key)
+    await user.type(inputElement, "test");
+    const metaEnterEvent = new KeyboardEvent("keydown", {
+      key: "Enter",
+      code: "Enter",
+      keyCode: 13,
+      metaKey: true,
+      bubbles: true,
+    });
+    fireEvent(inputElement, metaEnterEvent);
+    await user.type(inputElement, "hi");
+    expect(inputElement).toHaveValue("test\nhi");
+
+    await user.clear(inputElement);
+
+    // Simulate Ctrl+Enter for Windows/Linux (Ctrl key)
+    await user.type(inputElement, "test");
+    const ctrlEnterEvent = new KeyboardEvent("keydown", {
+      key: "Enter",
+      code: "Enter",
+      keyCode: 13,
+      ctrlKey: true,
+      bubbles: true
+
+    });
+    fireEvent(inputElement, ctrlEnterEvent);
+    await user.type(inputElement, "hi");
+    expect(inputElement).toHaveValue("test\nhi");
   });
 });

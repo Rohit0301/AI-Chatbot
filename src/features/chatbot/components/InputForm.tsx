@@ -2,9 +2,9 @@ import Box from "@mui/material/Box";
 import { v4 as uuidv4 } from "uuid";
 import Input from "@mui/material/Input";
 import Stack from "@mui/material/Stack";
-import { ChangeEvent, useState } from "react";
 import SendIcon from "@mui/icons-material/Send";
 import IconButton from "@mui/material/IconButton";
+import { ChangeEvent, KeyboardEvent, useState } from "react";
 
 import { useChatbotContext } from "../../../context/chatbot";
 import { generateBotMessage } from "../services/BotActionButtons";
@@ -25,6 +25,18 @@ const InputForm = (): JSX.Element => {
     await generateBotMessage(message, addNewBotMessage);
   };
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>): void => {
+    if (event.key === "Enter") {
+      if (event.metaKey || event.ctrlKey) {
+        event.preventDefault();
+        setUserMessage((prev) => prev + "\n");
+      } else {
+        event.preventDefault();
+        addNewMessage();
+      }
+    }
+  };
+
   return (
     <Box>
       <Stack
@@ -38,6 +50,7 @@ const InputForm = (): JSX.Element => {
           id="prompt-input"
           name="prompt-input"
           value={userMessage}
+          onKeyDown={handleKeyDown}
           placeholder="Type Message Here..."
           onChange={(event: ChangeEvent<HTMLTextAreaElement>) =>
             setUserMessage(event.target.value)
