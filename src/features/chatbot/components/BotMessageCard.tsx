@@ -2,14 +2,20 @@ import { FC, memo } from "react";
 import Stack from "@mui/material/Stack";
 import Paper from "@mui/material/Paper";
 import Avatar from "@mui/material/Avatar";
+import ThumbUp from "@mui/icons-material/ThumbUp";
 import IconButton from "@mui/material/IconButton";
 import RepeatIcon from "@mui/icons-material/Repeat";
+import ThumbDown from "@mui/icons-material/ThumbDown";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 
+import {
+  copyBotMessage,
+  generateBotMessage,
+} from "../services/BotActionButtons";
 import { IMessage } from "../../../types";
 import { useChatbotContext } from "../../../context/chatbot";
 import LiveTypingEffect from "../../../components/LiveTypingEffect";
@@ -19,7 +25,7 @@ interface Props {
 }
 
 const BotMessageCard: FC<Props> = memo(({ message }): JSX.Element => {
-  const { isBotTyping, stopWritingBotMessage } = useChatbotContext() || {};
+  const { stopWritingBotMessage } = useChatbotContext() || {};
   return (
     <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
       <Avatar sx={{ width: 44, height: 44 }}>
@@ -33,6 +39,7 @@ const BotMessageCard: FC<Props> = memo(({ message }): JSX.Element => {
           maxWidth: "70%",
           minWidth: "200px",
           position: "relative",
+          whiteSpace: "pre-line",
           borderTopLeftRadius: 0,
           "&:hover .bot-message-actions": {
             display: "flex",
@@ -42,20 +49,22 @@ const BotMessageCard: FC<Props> = memo(({ message }): JSX.Element => {
         {message.isWritting ? (
           <LiveTypingEffect
             message={message.text}
-            onComplete={() =>
-              stopWritingBotMessage && stopWritingBotMessage()
-            }
+            onComplete={() => stopWritingBotMessage?.()}
           />
         ) : (
           message.text
         )}
-        {!isBotTyping && <Actions />}
+        {!message.isWritting && <Actions message={message} />}
       </Paper>
     </Stack>
   );
 });
 
-const Actions = (): JSX.Element => {
+const Actions: FC<{
+  message: IMessage;
+}> = ({ message }): JSX.Element => {
+  const { lastBotMessageId, addNewBotMessage, likeUnlikeBotMessage } =
+    useChatbotContext() || {};
   return (
     <Stack
       direction="row"
@@ -75,22 +84,51 @@ const Actions = (): JSX.Element => {
     >
       <IconButton
         sx={{ p: 0, height: "max-content" }}
-        aria-label="action-button"
+        aria-label="copy"
+        onClick={() => copyBotMessage(message?.text)}
       >
         <ContentCopyIcon sx={{ fontSize: "22px" }} />
       </IconButton>
-      <IconButton sx={{ p: 0, height: "max-content" }}>
-        <ThumbUpOffAltIcon sx={{ fontSize: "22px" }} />
+      <IconButton
+      aria-label="like"
+        sx={{ p: 0, height: "max-content" }}
+        onClick={() => likeUnlikeBotMessage?.(message?.id, true)}
+      >
+        {message?.likeOrUnlike === "like" ? (
+          <ThumbUp sx={{ fontSize: "22px" }} color="primary" />
+        ) : (
+          <ThumbUpOffAltIcon sx={{ fontSize: "22px" }} />
+        )}
       </IconButton>
-      <IconButton sx={{ p: 0, height: "max-content" }}>
-        <ThumbDownOffAltIcon sx={{ fontSize: "22px" }} />
+      <IconButton
+        aria-label="unlike"
+        sx={{ p: 0, height: "max-content" }}
+        onClick={() => likeUnlikeBotMessage?.(message?.id, false)}
+      >
+        {message?.likeOrUnlike === "unlike" ? (
+          <ThumbDown  sx={{ fontSize: "22px" }} color="primary" />
+        ) : (
+          <ThumbDownOffAltIcon sx={{ fontSize: "22px" }} />
+        )}
       </IconButton>
-      <IconButton sx={{ p: 0, height: "max-content" }}>
+      <IconButton aria-label="comment" sx={{ p: 0, height: "max-content" }}>
         <ChatBubbleOutlineIcon sx={{ fontSize: "22px" }} />
       </IconButton>
-      <IconButton sx={{ p: 0, height: "max-content" }}>
-        <RepeatIcon sx={{ fontSize: "22px" }} />
-      </IconButton>
+      {lastBotMessageId === message?.id && (
+        <IconButton
+          aria-label="regenerate-response"
+          sx={{ p: 0, height: "max-content" }}
+          onClick={async () =>
+            await generateBotMessage(
+              message?.userMessage || "",
+              addNewBotMessage,
+              message?.id
+            )
+          }
+        >
+          <RepeatIcon sx={{ fontSize: "22px" }} />
+        </IconButton>
+      )}
     </Stack>
   );
 };

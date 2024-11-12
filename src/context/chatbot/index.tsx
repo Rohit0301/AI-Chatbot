@@ -16,9 +16,11 @@ const MESSAGES_STORAGE_KEY = "chatbot-messages";
 interface IChatbotContext {
   messages: IMessage[];
   isBotTyping: boolean;
+  lastBotMessageId: string | undefined;
   stopWritingBotMessage: () => void;
   addNewBotMessage: (botMessage: IMessage) => void;
   addNewUserMessage: (userMessage: IMessage) => void;
+  likeUnlikeBotMessage: (messageId: string, isLike: boolean) => void
 }
 
 const ChatbotContext: Context<IChatbotContext | null> =
@@ -57,6 +59,10 @@ export const ChatbotProvider: FC<{ children: ReactNode }> = ({
    */
   const addNewBotMessage = async (botMessage: IMessage): Promise<void> => {
     setMessages((prev: IMessage[]) => {
+      // If the message is regenerated then we override the text.
+      if (prev[prev.length - 1]?.id === botMessage?.id) {
+        prev.pop();
+      }
       setDataToStorage(MESSAGES_STORAGE_KEY, [...prev, botMessage]);
       return [...prev, botMessage];
     });
@@ -76,6 +82,24 @@ export const ChatbotProvider: FC<{ children: ReactNode }> = ({
     setDataToStorage(MESSAGES_STORAGE_KEY, updatedMessage);
   };
 
+  /**
+   * Likes or unlike last bot message.
+   * @param messageId - last bot message id
+   * @param isLike - if true user like the message if false use dislike the message
+   */
+  const likeUnlikeBotMessage = (messageId: string, isLike: boolean): void => {
+    const updatedMessage: IMessage[] = messages.map((message: IMessage) =>
+      message?.id !== messageId
+        ? message
+        : {
+            ...message,
+            likeOrUnlike: isLike ? "like" : "unlike",
+          }
+    );
+    setMessages(updatedMessage);
+    setDataToStorage(MESSAGES_STORAGE_KEY, updatedMessage);
+  };
+
   return (
     <ChatbotContext.Provider
       value={{
@@ -83,7 +107,11 @@ export const ChatbotProvider: FC<{ children: ReactNode }> = ({
         addNewBotMessage,
         addNewUserMessage,
         stopWritingBotMessage,
+        likeUnlikeBotMessage,
         isBotTyping: Boolean(messages?.[messages?.length - 1]?.isWritting),
+        lastBotMessageId: messages
+          .filter((message: IMessage) => message.isBotMessage)
+          ?.pop()?.id,
       }}
     >
       {children}

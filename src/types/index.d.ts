@@ -4,4 +4,5 @@ export interface IMessage {
     isWritting?: boolean;
     likeOrUnlike?: string;
     isBotMessage?: boolean;
+    userMessage?: string;
 }
