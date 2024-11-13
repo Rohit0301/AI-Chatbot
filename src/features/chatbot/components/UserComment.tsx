@@ -17,13 +17,12 @@ const UserComment: FC<Props> = ({ comment }): JSX.Element => {
         sx={{
           top: "44px",
           left: "22px",
-          border: `2px solid ${theme.palette.primary.main}`,
+          border: `2px solid ${theme.palette.secondary.main}`,
           width: "60px",
           bottom: "20px",
           borderTop: 0,
           borderRight: 0,
           position: "absolute",
-
           borderBottomLeftRadius: "16px",
         }}
       ></Box>
